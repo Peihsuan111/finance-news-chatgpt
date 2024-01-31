@@ -9,7 +9,7 @@ $ pip install requirements.txt
 ## Quickstart
 
 ```bash
-$ streamlit run app.py
+$ streamlit run Summarize_with_news.py
 ```
 
 

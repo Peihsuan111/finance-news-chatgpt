@@ -5,15 +5,23 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 # from langchain.vectorstores import FAISS
 # from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chat_models import ChatOpenAI
 from dotenv import load_dotenv, dotenv_values
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
+import asyncio
 import yaml
 import os
 import pandas as pd
 import glob
 import datetime
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+import uvicorn
+
+app = FastAPI()
+
 
 # load env token
 with open("token.yaml", "r") as token_yaml:
@@ -70,7 +78,12 @@ def load_vectorstore():
 def retrieval_chain():
     vectorstore = load_vectorstore()
 
-    llm = ChatOpenAI(temperature=0.0, model_name=chosen_model, streaming=True)
+    llm = ChatOpenAI(
+        temperature=0.0,
+        model_name=chosen_model,
+        streaming=True,
+        callbacks=[StreamingStdOutCallbackHandler()],
+    )
     prompt = """擔任金融分析師角色，請幫我根據以下新聞時事的文本回覆最底下的問題。若根據提供的文本，無法找到相關資訊請提供警示，不要嘗試生成內容。
     這些文本將包含在三次回程中 (```)。
 
@@ -86,7 +99,7 @@ def retrieval_chain():
     chain_type_kwargs = {"prompt": PROMPT, "verbose": True}
     qa_chain = RetrievalQA.from_chain_type(
         llm=llm,  # chain_type='map_rerank',
-        retriever=vectorstore.as_retriever(search_kwargs={"k": 5}),
+        retriever=vectorstore.as_retriever(search_kwargs={"k": 3}),
         # return_source_documents=True,
         chain_type_kwargs=chain_type_kwargs,
     )
@@ -97,11 +110,37 @@ def retrieval_chain():
     return qa_chain
 
 
+# llm rag example.
+
 qa_chain = retrieval_chain()
 
 
-def query_question(query):
-    # query = "整理近兩週美國股市回顧及未來展望"
-    # query = "亞洲股票市場的表現如何？亞洲股票市場包含「台灣、日本、中國、東南亞」等等的亞洲國家。幫我整理市場回顧及未來展望"
-    response = qa_chain(query)
-    return response
+async def generate(query):
+    for chunk in qa_chain(query):
+        yield chunk
+        print(f"this is chunk data: {chunk}")
+        await asyncio.sleep(
+            1
+        )  # Optional: Add a small delay between chunks for better streaming
+
+
+@app.get("/summary")
+async def query_question(query: str):
+    # return StreamingResponse(generate(query), media_type="application/json")
+    return StreamingResponse(generate(query), media_type="text/event-stream")
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8001)
+
+# python3 rag_function.py
+# with requests.post(api, params={"query": prompt}, headers=headers, stream=True) as r:
+#     for chunk in r.iter_content(1024):
+#         if chunk:
+#             # Decode the chunk and parse it as JSON
+#             data = chunk.decode("utf-8")
+#             json_data = json.loads(data)
+#             # Extract and print the "result" field
+#             result = json_data.get("result")
+#             if result:
+#                 print(result)
