@@ -10,10 +10,11 @@ import uvicorn
 # to the handler which streams the output
 from rag_functiom import load_vectorstore
 from langchain.chat_models import ChatOpenAI
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+
+# from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 # Importing Message templates
-from langchain.schema import HumanMessage
+# from langchain.schema import HumanMessage
 from handlers import MyCustomHandler
 from threading import Thread
 from queue import Queue
