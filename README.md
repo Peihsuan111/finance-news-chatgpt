@@ -7,7 +7,7 @@ $ pip install requirements.txt
 ```
 
 ## Quickstart
-- Front
+- Frontend
     ```bash
     $ streamlit run 1_News_Summarizer.py
     ```
