@@ -7,9 +7,11 @@ $ pip install requirements.txt
 ```
 
 ## Quickstart
-
-```bash
-$ streamlit run Summarize_with_news.py
-```
-
-
+- Front
+    ```bash
+    $ streamlit run 1_News_Summarizer.py
+    ```
+- Backend
+    ```bash
+    $ python3 api.py
+    ```
