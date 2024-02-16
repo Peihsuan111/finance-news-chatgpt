@@ -5,19 +5,21 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 # from langchain.vectorstores import FAISS
 # from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from langchain.chat_models import ChatOpenAI
+# from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+# from langchain.chat_models import ChatOpenAI
 from dotenv import load_dotenv, dotenv_values
-from langchain.prompts import PromptTemplate
-from langchain.chains import RetrievalQA
-import asyncio
+
+# from langchain.prompts import PromptTemplate
+# from langchain.chains import RetrievalQA
+# import asyncio
 import yaml
 import os
 import pandas as pd
 import glob
 import datetime
 from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
+
+# from fastapi.responses import StreamingResponse
 import uvicorn
 
 app = FastAPI()
