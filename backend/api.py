@@ -130,6 +130,11 @@ async def response_generator(query):
         await asyncio.sleep(0.01)
 
 
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+
 @app.get("/summary")
 async def stream(query: str):
     print(f"Query receieved: {query}")
