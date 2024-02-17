@@ -2,7 +2,8 @@
 
 FROM python:3.9
 
-ARG BACKEND_API
+
+ENV BACKEND_API="http://localhost:8000"
 
 COPY requirements.txt app/requirements.txt
 
@@ -14,5 +15,4 @@ COPY . /app
 
 EXPOSE 8501
 
-ENTRYPOINT ["streamlit","run"]
-CMD ["app.py", $BACKEND_API]
+CMD ["streamlit","run","app.py"]

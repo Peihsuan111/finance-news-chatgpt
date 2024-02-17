@@ -1,10 +1,15 @@
 # app.py
 import streamlit as st
 import requests
-import sys
+import os
 
-api = sys.argv[1]
-print(f"get backend api: {api}")
+api = os.getenv("BACKEND_API")
+
+if api is None:
+    print("Error: BACKEND_API environment variable is not set.")
+    exit(1)
+else:
+    print(f"get backend api: {api}")
 # api = "http://0.0.0.0:8000"
 
 
