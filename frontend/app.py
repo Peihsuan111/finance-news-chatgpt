@@ -1,13 +1,11 @@
 # app.py
 import streamlit as st
 import requests
+import sys
 
-# from opencc import OpenCC
-
-# cc = OpenCC("s2tw")
-
-api = "http://0.0.0.0:8000/summary"
-headers = {"accept": "text/event-stream"}
+api = sys.argv[1]
+print(f"get backend api: {api}")
+# api = "http://0.0.0.0:8000"
 
 
 def main():
@@ -39,7 +37,9 @@ def main():
 
     # create the app
     st.title("📰 Welcome to Augmented GPT")
-    st.caption("🚀 根據提供的近期金融新聞及基金報告內容，請OpenAI LLM回覆問題")
+    st.caption(
+        "🚀 根據提供的近期金融新聞及基金報告內容，請OpenAI LLM回覆問題(資料源日期:2023年10,11月)"
+    )
 
     # set initial message
     if "messages" not in st.session_state:
@@ -68,7 +68,7 @@ def main():
                 container = st.empty()
 
                 # response = query_question(prompt)
-                url = f"http://127.0.0.1:8000/summary/?query={prompt}"
+                url = f"{api}/summary/?query={prompt}"
                 full_response = ""
                 with requests.get(url, stream=True) as r:
                     for line in r.iter_lines(decode_unicode=True):
@@ -82,21 +82,6 @@ def main():
                 )
                 # st.   write(line)
 
-
-# def main():
-#     st.title("ChatGPU Interface")
-
-#     # User input text box
-#     user_input = st.text_input("You:", key="user_input")
-
-#     # Display user input
-#     st.markdown(f"**User:** {user_input}")
-
-#     # Simulate a response (you can replace this with a more sophisticated chatbot logic)
-#     response = get_chatbot_response(user_input)
-
-#     # Display the chatbot response
-#     st.markdown(f"**ChatGPU:** {response}")
 
 if __name__ == "__main__":
     main()

@@ -13,4 +13,4 @@ COPY . /app
 EXPOSE 8501
 
 ENTRYPOINT ["streamlit","run"]
-CMD ["app.py"]
+CMD ["app.py", $BACKEND_API]
