@@ -53,25 +53,15 @@ llm = ChatOpenAI(
     callbacks=[my_handler],
 )
 
-prompt = """擔任金融分析師角色，請幫我根據以下新聞時事的文本回覆最底下的問題。若根據提供的文本，無法找到相關資訊請提供警示，不要嘗試生成內容。
+prompt = """請用金融專家的角色，幫我根據以下新聞時事的文本回覆最底下的問題。若根據提供的文本，無法找到相關資訊請提供警示，不要嘗試生成內容。
 這些文本將包含在三次回程中 (```)。
 
 sentences :
 ```{context}```
 
 question :{question}
-請以專業金融分析師的角色用繁體中文回覆
+請用繁體中文回覆
 """
-# prompt = """Act as financial analyst. Please help me reply the question down below based on the given text source.
-# If can't find any related information do not try to answer it.
-# The given text source is provided inside (```)
-
-# sentences :
-# ```{context}```
-
-# question :{question}
-# Please reply answer in English in 100 words.
-# """
 
 
 PROMPT = PromptTemplate(template=prompt, input_variables=["context", "question"])
@@ -92,7 +82,6 @@ def generate(query):
         f"{datetime.datetime.now().strftime('%Y/%m/%d-%H:%M')} | Prepare Retrieval Chain!"
     )
     qa_chain(query)
-    # qa_chain.invoke([HumanMessage(content=query)])
 
 
 def start_generation(query):

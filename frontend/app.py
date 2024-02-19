@@ -4,6 +4,7 @@ import requests
 import os
 
 api = os.getenv("BACKEND_API")
+# api = "http://0.0.0.0:8000"
 
 if api is None:
     print("Error: BACKEND_API environment variable is not set.")
@@ -49,7 +50,7 @@ def main():
     # set initial message
     if "messages" not in st.session_state:
         st.session_state.messages = [
-            {"role": "assistant", "content": "歡迎問我近期不同市場的回顧及未來展望 👀"}
+            {"role": "assistant", "content": "歡迎問我2023年10,11月發生的金融時事👀"}
         ]
 
     # render older messages
@@ -77,7 +78,6 @@ def main():
                 full_response = ""
                 with requests.get(url, stream=True) as r:
                     for line in r.iter_lines(decode_unicode=True):
-                        # print(line)
                         full_response += "\n"
                         full_response += line
                         container.markdown(full_response)
