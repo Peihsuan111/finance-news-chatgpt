@@ -1,29 +1,18 @@
-# Importing all the required packages
-from fastapi import FastAPI
-import asyncio
+from fastapi import FastAPI, Depends
 from fastapi.responses import StreamingResponse
-import uvicorn
-
-# Generate wrapper function as discussed above
-# Please extend this with the required functionality
-# We are not returning anything as llm has already been tagged
-# to the handler which streams the output
-from rag_functiom import load_vectorstore
 from langchain.chat_models import ChatOpenAI
-
-# from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-
-# Importing Message templates
-# from langchain.schema import HumanMessage
-from handlers import MyCustomHandler
-from threading import Thread
-from queue import Queue
-import os, yaml
 from dotenv import dotenv_values
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
+from threading import Thread
+from queue import Queue
 import asyncio
+import uvicorn
+import os, yaml
 import datetime
+from backend.utils import load_vectorstore
+from handlers import MyCustomHandler
+from dependencies import get_token_header
 
 # load env token
 with open("token.yaml", "r") as token_yaml:
@@ -41,16 +30,12 @@ app = FastAPI()
 # Creating a Streamer queue
 streamer_queue = Queue()
 
-vectorstore = load_vectorstore()
-
 # Creating an object of custom handler
-my_handler = MyCustomHandler(streamer_queue)
-
 llm = ChatOpenAI(
     temperature=0.0,
     model_name="gpt-3.5-turbo",
     streaming=True,
-    callbacks=[my_handler],
+    callbacks=[MyCustomHandler(streamer_queue)],
 )
 
 prompt = """請用金融專家的角色，幫我根據以下新聞時事的文本回覆最底下的問題。若根據提供的文本，無法找到相關資訊請提供警示，不要嘗試生成內容。
@@ -63,10 +48,9 @@ question :{question}
 請用繁體中文回覆
 """
 
-
 PROMPT = PromptTemplate(template=prompt, input_variables=["context", "question"])
 
-chain_type_kwargs = {"prompt": PROMPT, "verbose": True}
+vectorstore = load_vectorstore()
 
 
 def generate(query):
@@ -75,7 +59,7 @@ def generate(query):
         llm=llm,  # chain_type='map_rerank',
         retriever=vectorstore.as_retriever(search_kwargs={"k": 3}),
         # return_source_documents=True,
-        chain_type_kwargs=chain_type_kwargs,
+        chain_type_kwargs={"prompt": PROMPT, "verbose": True},
     )
 
     print(
@@ -114,8 +98,7 @@ async def response_generator(query):
         # statement to signal the queue that task is done
         streamer_queue.task_done()
 
-        # guard to make sure we are not extracting anything from
-        # empty queue
+        # guard to make sure we are not extracting anything from empty queue
         await asyncio.sleep(0.01)
 
 
@@ -124,7 +107,7 @@ async def root():
     return {"message": "Hello World"}
 
 
-@app.get("/summary")
+@app.get("/summary", dependencies=[Depends(get_token_header)])
 async def stream(query: str):
     print(f"Query receieved: {query}")
     return StreamingResponse(response_generator(query), media_type="text/event-stream")

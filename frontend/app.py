@@ -1,17 +1,25 @@
 # app.py
 import streamlit as st
 import requests
+import yaml
 import os
 
-api = os.getenv("BACKEND_API")
-# api = "http://0.0.0.0:8000"
+LOCAL_TEST = True
 
-if api is None:
-    print("Error: BACKEND_API environment variable is not set.")
-    exit(1)
-else:
-    print(f"get backend api: {api}")
-# api = "http://0.0.0.0:8000"
+api = "http://0.0.0.0:8000"
+if not LOCAL_TEST:
+    api = os.getenv("BACKEND_API")
+
+print(f"get backend api: {api}")
+
+# header token
+with open("token.yaml", "r") as token_yaml:
+    try:
+        token = yaml.safe_load(token_yaml)
+    except yaml.YAMLError as exc:
+        print(exc)
+
+header_token = token["header_token"]
 
 
 def main():
@@ -74,7 +82,7 @@ def main():
                 container = st.empty()
 
                 # response = query_question(prompt)
-                url = f"{api}/summary/?query={prompt}"
+                url = f"{api}/summary/?query={prompt}&x_token={header_token}"
                 full_response = ""
                 with requests.get(url, stream=True) as r:
                     for line in r.iter_lines(decode_unicode=True):
