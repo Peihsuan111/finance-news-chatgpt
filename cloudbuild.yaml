@@ -20,3 +20,5 @@ steps:
     args: ['push', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ai-project/llm-backend:$SHORT_SHA']
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ai-project/llm-frontend:$SHORT_SHA']
+options:
+  logging: CLOUD_LOGGING_ONLY
