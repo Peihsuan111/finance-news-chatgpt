@@ -4,7 +4,7 @@ import requests
 import yaml
 import os
 
-LOCAL_TEST = True
+LOCAL_TEST = False
 
 api = "http://0.0.0.0:8000"
 if not LOCAL_TEST:
