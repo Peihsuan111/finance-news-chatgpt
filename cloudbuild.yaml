@@ -1,0 +1,22 @@
+steps:
+  # Build the Docker Compose services
+  - name: 'docker/compose:1.26.2'
+    entrypoint: '/bin/sh'  # Use the shell available in Alpine Linux
+    args:
+      - '-c'
+      - |
+        docker-compose build --build-arg BACKEND_API="https://llm-backend-3nygwkh4ya-de.a.run.app" \
+          --build-arg PROJECT_ID=$PROJECT_ID \
+          --build-arg SHORT_SHA=$SHORT_SHA
+
+  # Tag the built images with the desired tags
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['tag', 'workspace_backend:latest', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ai-project/llm-backend:$SHORT_SHA']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['tag', 'workspace_frontend:latest', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ai-project/llm-frontend:$SHORT_SHA']
+
+  # Push the tagged images to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ai-project/llm-backend:$SHORT_SHA']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ai-project/llm-frontend:$SHORT_SHA']
