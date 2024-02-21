@@ -10,7 +10,7 @@ import asyncio
 import uvicorn
 import os, yaml
 import datetime
-from backend.utils import load_vectorstore
+from utils import load_vectorstore
 from handlers import MyCustomHandler
 from dependencies import get_token_header
 
