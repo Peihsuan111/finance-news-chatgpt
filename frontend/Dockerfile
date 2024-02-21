@@ -1,6 +1,6 @@
 # frontent/Dockerfile
 
-FROM python:3.9
+FROM python:3.8
 
 ARG BACKEND_API
 

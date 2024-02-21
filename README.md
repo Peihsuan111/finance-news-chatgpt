@@ -7,16 +7,19 @@ $ pip install requirements.txt
 ```
 
 ## Quickstart
-- Frontend
+- Frontend 
+  - Build Image
     ```bash
-    $ streamlit run app.py
+    $ cd frontend
+    $ docker build --build-arg BACKEND_API="https://llm-backend-3nygwkh4ya-de.a.run.app" -t asia-east1-docker.pkg.dev/animated-spider-404200/ai-project/llm-frontend ./
     ```
 - Backend
     ```bash
-    $ python3 api.py
+    $ cd backend
+    $ docker build -t asia-east1-docker.pkg.dev/animated-spider-404200/ai-project/llm-backend ./
     ```
     
-    - embedding module
+- embedding module
     ```
     transformers==4.31.0
     sentence-transformers==2.2.2
