@@ -2,9 +2,9 @@
 import streamlit as st
 import requests
 import yaml
-import os
+import os, sys
 
-LOCAL_TEST = False
+LOCAL_TEST = sys.argv[1]
 
 api = "http://0.0.0.0:8000"
 if not LOCAL_TEST:

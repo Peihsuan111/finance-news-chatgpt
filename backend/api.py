@@ -51,6 +51,7 @@ question :{question}
 PROMPT = PromptTemplate(template=prompt, input_variables=["context", "question"])
 
 vectorstore = load_vectorstore()
+print(f"vectore store count: {vectorstore._collection.count()}")
 
 
 def generate(query):
