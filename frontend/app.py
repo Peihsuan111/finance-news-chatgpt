@@ -6,6 +6,8 @@ import os, sys
 
 LOCAL_TEST = sys.argv[1]
 
+LOCAL_TEST = False if LOCAL_TEST == "False" else LOCAL_TEST
+
 api = "http://0.0.0.0:8000"
 if not LOCAL_TEST:
     api = os.getenv("BACKEND_API")
