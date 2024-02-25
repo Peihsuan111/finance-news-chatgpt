@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import Header, HTTPException
 import yaml
 
-# get haeder x-token
+# get header x-token
 with open("token.yaml", "r") as token_yaml:
     try:
         token = yaml.safe_load(token_yaml)

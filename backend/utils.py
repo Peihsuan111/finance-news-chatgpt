@@ -3,27 +3,16 @@ from langchain.vectorstores import Chroma
 from langchain.document_loaders import DataFrameLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-# from langchain.vectorstores import FAISS
-# from langchain.embeddings import HuggingFaceEmbeddings
-# from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-# from langchain.chat_models import ChatOpenAI
-from dotenv import load_dotenv, dotenv_values
+from dotenv import dotenv_values
 import math
 import time
 import tiktoken
-
-# from langchain.prompts import PromptTemplate
-# from langchain.chains import RetrievalQA
-# import asyncio
 import yaml
 import os
 import pandas as pd
 import glob
 import datetime
 from fastapi import FastAPI
-
-# from fastapi.responses import StreamingResponse
-import uvicorn
 
 app = FastAPI()
 
@@ -44,7 +33,7 @@ os.environ["OPENAI_API_KEY"] = api_key
 
 db_path = "./chroma_db"
 llm_model = ["gpt-3.5-turbo", "gpt-3.5-turbo-1106", "gpt-4-0314"]
-chosen_model = llm_model[1]
+chosen_model = llm_model[0]
 
 
 def num_tokens_from_string(string: str, chosen_model: str) -> int:

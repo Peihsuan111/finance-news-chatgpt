@@ -16,7 +16,6 @@ Make sure you put token.yaml inside ./frontend & ./backend folder
 
 token.yaml
 `
-openai_token: YOUR_OPENAI_TOKEN
 header_token: RANDOM_HEADER_TOKEN
 `
 ``` 

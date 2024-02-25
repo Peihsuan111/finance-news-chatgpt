@@ -1,42 +1,32 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Body, Header
 from fastapi.responses import StreamingResponse
 from langchain.chat_models import ChatOpenAI
 from dotenv import dotenv_values
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
-from threading import Thread
-from queue import Queue
 import asyncio
 import uvicorn
 import os, yaml
-import datetime
 from utils import load_vectorstore
-from handlers import MyCustomHandler
+from pydantic import BaseModel
 from dependencies import get_token_header
+from langchain.callbacks.streaming_aiter import AsyncIteratorCallbackHandler
 
-# load env token
+# Using token.yaml openai api
 with open("token.yaml", "r") as token_yaml:
     try:
         token = yaml.safe_load(token_yaml)
     except yaml.YAMLError as exc:
         print(exc)
-api_key = token["openai_token"]
-config = dotenv_values("../.env")
-os.environ["OPENAI_API_KEY"] = api_key
+os.environ["OPENAI_API_KEY"] = token["openai_token"]
 
-# Creating a FastAPI app
+# Load env token
+config = dotenv_values("../.env")
+
+
+chosen_model = "gpt-3.5-turbo"  # gpt-3.5-turbo-1106
 app = FastAPI()
 
-# Creating a Streamer queue
-streamer_queue = Queue()
-
-# Creating an object of custom handler
-llm = ChatOpenAI(
-    temperature=0.0,
-    model_name="gpt-3.5-turbo",
-    streaming=True,
-    callbacks=[MyCustomHandler(streamer_queue)],
-)
 
 prompt = """請用金融專家的角色，幫我根據以下新聞時事的文本回覆最底下的問題。若根據提供的文本，無法找到相關資訊請提供警示，不要嘗試生成內容。
 這些文本將包含在三次回程中 (```)。
@@ -54,64 +44,61 @@ vectorstore = load_vectorstore()
 print(f"vectore store count: {vectorstore._collection.count()}")
 
 
-def generate(query):
-    # llm.invoke([HumanMessage(content=query)])
-    qa_chain = RetrievalQA.from_chain_type(
-        llm=llm,  # chain_type='map_rerank',
-        retriever=vectorstore.as_retriever(search_kwargs={"k": 3}),
-        # return_source_documents=True,
-        chain_type_kwargs={"prompt": PROMPT, "verbose": True},
-    )
+llm = ChatOpenAI(
+    temperature=0.0,
+    model_name=chosen_model,
+    streaming=True,
+    callbacks=[],
+)
 
-    print(
-        f"{datetime.datetime.now().strftime('%Y/%m/%d-%H:%M')} | Prepare Retrieval Chain!"
-    )
-    qa_chain(query)
-
-
-def start_generation(query):
-    # Creating a thread with generate function as a target
-    thread = Thread(target=generate, kwargs={"query": query})
-    # Starting the thread
-    thread.start()
+qa_chain = RetrievalQA.from_chain_type(
+    llm=llm,
+    retriever=vectorstore.as_retriever(search_kwargs={"k": 3}, search_type="mmr"),
+    # return_source_documents=True,
+    chain_type_kwargs={"prompt": PROMPT, "verbose": True},
+)
 
 
-async def response_generator(query):
-    # Start the generation process
-    start_generation(query)
+async def run_call(query: str, stream_it: AsyncIteratorCallbackHandler):
 
-    # Starting an infinite loop
-    while True:
-        # Obtain the value from the streamer queue
-        value = streamer_queue.get()
-        # Check for the stop signal, which is None in our case
-        if value == None:
-            # If stop signal is found break the loop
-            break
-
-        yield value
-        # Split the value into words
-        # words = value.split()
-        # for word in words:
-        #     # Else yield the value
-        #     yield word  # Send each word as a separate chunk
-
-        # statement to signal the queue that task is done
-        streamer_queue.task_done()
-
-        # guard to make sure we are not extracting anything from empty queue
-        await asyncio.sleep(0.01)
+    # assign callback handler
+    llm.callbacks = [stream_it]
+    try:
+        response = await qa_chain.acall(inputs={"query": query})
+    except asyncio.TimeoutError:
+        return {"error": "Response took too long"}
+    return response
 
 
-@app.get("/")
+async def create_gen(query: str, stream_it: AsyncIteratorCallbackHandler):
+    task = asyncio.create_task(run_call(query, stream_it))
+    async for token in stream_it.aiter():
+        yield token
+    await task
+
+
+# request input format
+class Query(BaseModel):
+    text: str
+
+
+@app.get("/", dependencies=[Depends(get_token_header)])
 async def root():
     return {"message": "Hello World"}
 
 
-@app.get("/summary", dependencies=[Depends(get_token_header)])
-async def stream(query: str):
-    print(f"Query receieved: {query}")
-    return StreamingResponse(response_generator(query), media_type="text/event-stream")
+@app.get("/chat", dependencies=[Depends(get_token_header)])
+async def stream(query: Query = Body(...), authorization: str = Header(None)):
+    # Extract the openai token from the Authorization header
+    if authorization:
+        openai_token = authorization.split("Bearer ")[-1]
+        # Validate the openai_token and perform necessary actions
+        if openai_token.startswith(token["sara_token"]):
+            stream_it = AsyncIteratorCallbackHandler()
+            generator = create_gen(query.text, stream_it)
+            return StreamingResponse(generator, media_type="text/event-stream")
+        else:
+            return {"message": "Please given valid password!"}
 
 
 if __name__ == "__main__":
