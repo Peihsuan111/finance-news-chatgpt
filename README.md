@@ -1,3 +1,15 @@
+<!-- 專案簡介 -->
+## About The Project
+
+* LLM + RAG Inplement
+  * RAG Dataset(新聞時間區間: 2023年10,11月): 
+    * [鉅亨網](https://www.cnyes.com)
+    * [MoneyDj理財網](https://www.moneydj.com)
+    * [經濟日報](https://money.udn.com/money/index)
+    * [聯合報](https://udn.com/news/index)
+    * [Yahoo新聞](https://tw.stock.yahoo.com/rss-index/)
+* Let LLM answer your question based on your own dataset. 
+
 ## Installation
 
 Open a terminal and run:
@@ -10,18 +22,19 @@ $ cd frontend
 $ pip install requirements.txt
 ```
 
-## Quickstart
+## How to use?
 
-Make sure you put token.yaml inside ./frontend & ./backend folder
+*1.* Make sure you put token.yaml inside ./frontend & ./backend folder
 
-- token.yaml:
-  ```
-  openai_token:
-  header_token: RANDOM_HEADER_TOKEN
-  sara_token: RANDOM_ACCESS_TOKEN
-  ``` 
+   * token.yaml:
+     ```
+     openai_token: YOUR_OPENAI_TOKEN
+     header_token: RANDOM_HEADER_TOKEN
+     sara_token: RANDOM_ACCESS_TOKEN
+     ``` 
+     [Get OPENAI API TOKEN](https://platform.openai.com/docs/quickstart?context=python)
 
-### Run locally
+### (Option 1)Run locally
 - Backend
   ```
   $ cd backend
@@ -33,15 +46,16 @@ Make sure you put token.yaml inside ./frontend & ./backend folder
   $ streamlit run app.py True
   ```
 
-### Deploy on GCP
-- Setup beforehand: 
-  1. Create a GCP Project
-  2. Open Artifact Registry repository(ex. `ai-project`). Also, make sure repository has right permission >> `Artifact Registry存放區管理員`
+### (Option 2)Deploy on GCP
+1. GCP Setup: 
+   1. Create a GCP Project
+   2. Open Artifact Registry repository(ex. `ai-project`). Also, make sure repository has right permission >> `Artifact Registry存放區管理員`
 
-- argv: (change these argv to your own)
-  - gcp project name: `animated-spider-404200`
-  - artifact registry: `ai-project`
+2. Change these argv to your own
+     - gcp project name: `animated-spider-404200`
+     - artifact registry: `ai-project`
 
+3. Build docker image
 - Backend
     ```bash
     $ cd backend
@@ -58,7 +72,8 @@ Make sure you put token.yaml inside ./frontend & ./backend folder
 
   $ docker push asia-east1-docker.pkg.dev/animated-spider-404200/ai-project/llm-frontend
   ```
-    
+
+## Other module usage   
 - embedding module
     ```
     transformers==4.31.0
@@ -68,3 +83,8 @@ Make sure you put token.yaml inside ./frontend & ./backend folder
     xformers==0.0.20
     bitsandbytes==0.41.0
     ```
+
+<!-- 任務清單 -->
+## To-do
+- [x] 完成的代辦事項
+    - [ ] 未完成的子代辦事項
