@@ -11,14 +11,15 @@ $ pip install requirements.txt
 ```
 
 ## Quickstart
-```
+
 Make sure you put token.yaml inside ./frontend & ./backend folder
 
-token.yaml
-`
-header_token: RANDOM_HEADER_TOKEN
-`
-``` 
+- token.yaml:
+  ```
+  openai_token:
+  header_token: RANDOM_HEADER_TOKEN
+  sara_token: RANDOM_ACCESS_TOKEN
+  ``` 
 
 ### Run locally
 - Backend

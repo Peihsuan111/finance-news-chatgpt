@@ -32,8 +32,7 @@ config = dotenv_values("../.env")
 os.environ["OPENAI_API_KEY"] = api_key
 
 db_path = "./chroma_db"
-llm_model = ["gpt-3.5-turbo", "gpt-3.5-turbo-1106", "gpt-4-0314"]
-chosen_model = llm_model[0]
+chosen_model = "gpt-3.5-turbo"  # "gpt-3.5-turbo-1106", "gpt-4-0314"]
 
 
 def num_tokens_from_string(string: str, chosen_model: str) -> int:
