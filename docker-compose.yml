@@ -12,6 +12,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - BACKEND_API="https://llm-backend-3nygwkh4ya-de.a.run.app"
     image: asia-east1-docker.pkg.dev/animated-spider-404200/ai-project/llm-frontend:latest
     ports:
       - 8501:8501
