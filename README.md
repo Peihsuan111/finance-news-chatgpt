@@ -99,6 +99,8 @@ pip install requirements.txt
 <!-- DEMO -->
 ## DEMO
 
-![front-end page]<https://github.com/Peihsuan111/finance-news-chatgpt/blob/1ef56d8f078b5fc88ee492b420edc27f2357aa48/frontend%20page.png>
+- Front Page
+![front-end page1](/img/frontend-page.png?raw=true "Demo Page 1")
 
-![front-end page2]<https://github.com/Peihsuan111/finance-news-chatgpt/blob/1ef56d8f078b5fc88ee492b420edc27f2357aa48/frontend%20page%20demo.png>
+* Demo
+![front-end page2](/img/frontend-page-demo.png?raw=true "Demo Page 2")
