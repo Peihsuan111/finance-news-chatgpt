@@ -2,79 +2,91 @@
 ## About The Project
 
 * LLM + RAG Inplement
-  * RAG Dataset(新聞時間區間: 2023年10,11月): 
+  * RAG Dataset(新聞時間區間: 2023年10,11月):
     * [鉅亨網](https://www.cnyes.com)
     * [MoneyDj理財網](https://www.moneydj.com)
     * [經濟日報](https://money.udn.com/money/index)
     * [聯合報](https://udn.com/news/index)
     * [Yahoo新聞](https://tw.stock.yahoo.com/rss-index/)
-* Let LLM answer your question based on your own dataset. 
+* Let LLM answer your question based on your own dataset.
 
 ## Installation
 
 Open a terminal and run:
 
 ```bash
-$ cd backend
-$ pip install requirements.txt
+cd backend
+pip install requirements.txt
 
-$ cd frontend
-$ pip install requirements.txt
+cd frontend
+pip install requirements.txt
 ```
 
 ## How to use?
 
 *1.* Make sure you put token.yaml inside ./frontend & ./backend folder
 
-   * token.yaml:
+* token.yaml:
+
      ```
      openai_token: YOUR_OPENAI_TOKEN
      header_token: RANDOM_HEADER_TOKEN
      sara_token: RANDOM_ACCESS_TOKEN
-     ``` 
+     ```
+
      [Get OPENAI API TOKEN](https://platform.openai.com/docs/quickstart?context=python)
 
 ### (Option 1)Run locally
-- Backend
+
+* Backend
+
   ```
-  $ cd backend
-  $ python3 api.py
+  cd backend
+  python3 api.py
   ```
-- Frontend
+
+* Frontend
+
   ```
-  $ cd frontend
-  $ streamlit run app.py True
+  cd frontend
+  streamlit run app.py True
   ```
 
 ### (Option 2)Deploy on GCP
-1. GCP Setup: 
+
+1. GCP Setup:
    1. Create a GCP Project
    2. Open Artifact Registry repository(ex. `ai-project`). Also, make sure repository has right permission >> `Artifact Registry存放區管理員`
 
 2. Change these argv to your own
-     - gcp project name: `animated-spider-404200`
-     - artifact registry: `ai-project`
+     * gcp project name: `animated-spider-404200`
+     * artifact registry: `ai-project`
 
 3. Build docker image
-- Backend
-    ```bash
-    $ cd backend
-    $ docker build -t asia-east1-docker.pkg.dev/animated-spider-404200/ai-project/llm-backend ./
 
-    $ docker push asia-east1-docker.pkg.dev/animated-spider-404200/ai-project/llm-backend
+* Backend
+
+    ```bash
+    cd backend
+    docker build -t asia-east1-docker.pkg.dev/animated-spider-404200/ai-project/llm-backend ./
+
+    docker push asia-east1-docker.pkg.dev/animated-spider-404200/ai-project/llm-backend
     ```
 
-- Frontend 
-  - Build Image
-  ```bash
-  $ cd frontend
-  $ docker build --build-arg BACKEND_API="https://llm-backend-3nygwkh4ya-de.a.run.app" -t asia-east1-docker.pkg.dev/animated-spider-404200/ai-project/llm-frontend ./
+* Frontend
+  * Build Image
 
-  $ docker push asia-east1-docker.pkg.dev/animated-spider-404200/ai-project/llm-frontend
+  ```bash
+  cd frontend
+  docker build --build-arg BACKEND_API="https://llm-backend-3nygwkh4ya-de.a.run.app" -t asia-east1-docker.pkg.dev/animated-spider-404200/ai-project/llm-frontend ./
+
+  docker push asia-east1-docker.pkg.dev/animated-spider-404200/ai-project/llm-frontend
   ```
 
-## Other module usage   
-- embedding module
+## Other module usage
+
+* embedding module
+
     ```
     transformers==4.31.0
     sentence-transformers==2.2.2
@@ -84,7 +96,9 @@ $ pip install requirements.txt
     bitsandbytes==0.41.0
     ```
 
-<!-- 任務清單 -->
-## To-do
-- [x] 完成的代辦事項
-    - [ ] 未完成的子代辦事項
+<!-- DEMO -->
+## DEMO
+
+![front-end page]<https://github.com/Peihsuan111/finance-news-chatgpt/blob/1ef56d8f078b5fc88ee492b420edc27f2357aa48/frontend%20page.png>
+
+![front-end page2]<https://github.com/Peihsuan111/finance-news-chatgpt/blob/1ef56d8f078b5fc88ee492b420edc27f2357aa48/frontend%20page%20demo.png>
