@@ -1,4 +1,8 @@
 langchain==0.1.11
+langchain-community==0.0.32 
+langchain-core==0.1.42
+langchain-text-splitters==0.0.1
+langchainplus-sdk==0.0.20
 uvicorn
 fastapi
 pandas
