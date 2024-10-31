@@ -47,7 +47,7 @@ with st.sidebar:
     password_key = st.text_input("Password", key="sara_password_key", type="password")
     st.markdown(
         """
-        :red[👆 Please contact author Sara to get] :rainbow[Password]."""
+        :red[👆 Please contact author Sara to get one] :rainbow[Password]."""
     )
     "[View the source code](https://github.com/Peihsuan111/finance-news-chatgpt)"
 
@@ -96,14 +96,16 @@ def main():
                 # response = query_question(prompt)
                 url = f"{api}/chat"
                 full_response = ""
-                with requests.get(
+                with requests.post(
                     url,
                     stream=True,
                     json={
                         "text": prompt,
                     },
-                    params={"x_token": header_token},
-                    headers={"Authorization": f"Bearer {password_key}"},
+                    headers={
+                        "Authorization": f"Bearer {password_key}",
+                        "x-token": header_token,
+                    },
                 ) as r:
                     for line in r.iter_content(decode_unicode=True):
                         full_response += line
