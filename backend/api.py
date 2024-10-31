@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, Body, Header
+from fastapi import FastAPI, Depends, Body, Header, HTTPException
 from fastapi.responses import StreamingResponse
 from langchain.chat_models import ChatOpenAI
 from dotenv import dotenv_values
@@ -87,18 +87,20 @@ async def root():
     return {"message": "Hello World"}
 
 
-@app.get("/chat", dependencies=[Depends(get_token_header)])
+API_TOKENS = {"user1_token": "sk-123456789", "user2_token": "sk-987654321"}
+
+
+@app.post("/chat", dependencies=[Depends(get_token_header)])
 async def stream(query: Query = Body(...), authorization: str = Header(None)):
-    # Extract the openai token from the Authorization header
-    if authorization:
-        openai_token = authorization.split("Bearer ")[-1]
-        # Validate the openai_token and perform necessary actions
-        if openai_token.startswith(token["sara_token"]):
-            stream_it = AsyncIteratorCallbackHandler()
-            generator = create_gen(query.text, stream_it)
-            return StreamingResponse(generator, media_type="text/event-stream")
-        else:
-            return {"message": "Please given valid password!"}
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Invalid authorization header")
+    token = authorization.split("Bearer ")[1]
+    if token not in API_TOKENS.values():
+        raise HTTPException(status_code=401, detail="Invalid Password Token!")
+    else:
+        stream_it = AsyncIteratorCallbackHandler()
+        generator = create_gen(query.text, stream_it)
+        return StreamingResponse(generator, media_type="text/event-stream")
 
 
 if __name__ == "__main__":
